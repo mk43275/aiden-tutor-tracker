@@ -114,6 +114,9 @@
         };
 
         // --- 3. SAVE FUNCTIONS ---
+        <textarea id="score_notes" placeholder="Test-specific notes (e.g. 'Ran out of time on Math module 2')" class="w-full p-2 border rounded text-sm mb-4 outline-none focus:border-indigo-400"></textarea>
+        
+        <script>
         async function saveScore() {
             const data = {
                 title: document.getElementById('title').value || "SAT Test",
@@ -128,12 +131,17 @@
                 e_ii: parseInt(document.getElementById('e_ii').value)||0,
                 e_cs: parseInt(document.getElementById('e_cs').value)||0,
                 e_eoi: parseInt(document.getElementById('e_eoi').value)||0,
-                e_sec: parseInt(document.getElementById('e_sec').value)||0
+                e_sec: parseInt(document.getElementById('e_sec').value)||0,
+                notes: document.getElementById('score_notes').value // This maps to your 'notes' column
             };
             const { error } = await _sb.from('scores').insert([data]);
             if(error) alert(error.message);
-            else { clearInputs(['title','test_date','math','english','m_alg','m_adv','m_psda','m_gt','e_ii','e_cs','e_eoi','e_sec']); loadAll(); }
+            else { 
+                clearInputs(['title','test_date','math','english','m_alg','m_adv','m_psda','m_gt','e_ii','e_cs','e_eoi','e_sec', 'score_notes']); 
+                loadAll(); 
+            }
         }
+        </script>
 
         async function saveSession() {
             const data = {
