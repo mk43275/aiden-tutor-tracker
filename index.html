@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,14 +8,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-900 pb-20">
 
     <header class="bg-white border-b p-6 mb-8 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-indigo-700 italic">AIDEN_SAT_PORTAL</h1>
+            <h1 class="text-2xl font-black text-indigo-700 tracking-tight">AIDEN_SAT_PORTAL</h1>
             <div class="flex gap-4 items-center">
-                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded tracking-widest uppercase">Cloud Sync</span>
+                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded tracking-widest uppercase">Cloud Sync Active</span>
             </div>
         </div>
     </header>
@@ -23,48 +27,60 @@
         
         <div class="lg:col-span-7 space-y-6">
             <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-indigo-500"></i> New Test Score</h2>
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-indigo-700">
+                    <i class="fa-solid fa-square-poll-vertical"></i> Log Full Practice Test
+                </h2>
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <input type="text" id="title" placeholder="Test Title" class="p-2 border rounded text-sm">
-                    <input type="date" id="test_date" class="p-2 border rounded text-sm">
+                    <input type="text" id="title" placeholder="Test Name (e.g. Bluebook #1)" class="p-2 border rounded text-sm outline-none focus:border-indigo-400">
+                    <input type="date" id="test_date" class="p-2 border rounded text-sm outline-none focus:border-indigo-400">
                 </div>
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
-                        <input type="number" id="math" placeholder="Math Total" class="w-full bg-transparent font-bold text-lg outline-none">
-                        <div class="grid grid-cols-2 gap-2 mt-2">
-                            <input type="number" id="m_alg" placeholder="Alg" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="m_adv" placeholder="Adv" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="m_psda" placeholder="PS" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="m_gt" placeholder="G/T" class="bg-white border rounded p-1 text-[10px]">
+                        <label class="text-[10px] font-bold text-blue-600 uppercase">Math Total</label>
+                        <input type="number" id="math" placeholder="800" class="w-full bg-transparent font-black text-2xl outline-none mb-2">
+                        <div class="grid grid-cols-2 gap-2 mt-2 border-t border-blue-100 pt-2">
+                            <input type="number" id="m_alg" placeholder="Algebra" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="m_adv" placeholder="Adv Math" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="m_psda" placeholder="Prob/Data" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="m_gt" placeholder="Geo/Trig" class="bg-white border rounded p-1 text-[10px]">
                         </div>
                     </div>
                     <div class="p-3 bg-purple-50 rounded-xl border border-purple-100">
-                        <input type="number" id="english" placeholder="English Total" class="w-full bg-transparent font-bold text-lg outline-none">
-                        <div class="grid grid-cols-2 gap-2 mt-2">
-                            <input type="number" id="e_ii" placeholder="I&I" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="e_cs" placeholder="C&S" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="e_eoi" placeholder="EoI" class="bg-white border rounded p-1 text-[10px]">
-                            <input type="number" id="e_sec" placeholder="SEC" class="bg-white border rounded p-1 text-[10px]">
+                        <label class="text-[10px] font-bold text-purple-600 uppercase">English Total</label>
+                        <input type="number" id="english" placeholder="800" class="w-full bg-transparent font-black text-2xl outline-none mb-2">
+                        <div class="grid grid-cols-2 gap-2 mt-2 border-t border-purple-100 pt-2">
+                            <input type="number" id="e_ii" placeholder="Info/Ideas" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="e_cs" placeholder="Craft/Str" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="e_eoi" placeholder="Express" class="bg-white border rounded p-1 text-[10px]">
+                            <input type="number" id="e_sec" placeholder="Convent." class="bg-white border rounded p-1 text-[10px]">
                         </div>
                     </div>
                 </div>
-                <button onclick="saveScore()" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-lg hover:bg-indigo-700 transition">Save Test</button>
+                <button onclick="saveScore()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Upload to Cloud</button>
             </section>
 
-            <h2 class="text-xl font-black text-gray-400 uppercase tracking-widest text-center py-4">Progression</h2>
+            <h2 class="text-xl font-black text-gray-300 uppercase tracking-widest text-center py-4 italic">Progression</h2>
             <div id="scoreHistory" class="space-y-4"></div>
         </div>
 
         <div class="lg:col-span-5 space-y-6">
             <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-chalkboard-user text-emerald-500"></i> New Tutor Log</h2>
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-emerald-600">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Tutor Session Log
+                </h2>
                 <div class="space-y-3 text-sm">
                     <div class="flex gap-2">
-                        <div class="w-1/2"><label class="text-[10px] uppercase font-bold text-gray-400">Date</label><input type="date" id="s_date" class="w-full p-2 border rounded"></div>
-                        <div class="w-1/2"><label class="text-[10px] uppercase font-bold text-gray-400">Next Class</label><input type="date" id="s_next" class="w-full p-2 border rounded"></div>
+                        <div class="w-1/2">
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Class Time</label>
+                            <input type="datetime-local" id="s_date" class="w-full p-2 border rounded text-xs bg-gray-50">
+                        </div>
+                        <div class="w-1/2">
+                            <label class="text-[10px] uppercase font-bold text-gray-400">Next Due</label>
+                            <input type="datetime-local" id="s_next" class="w-full p-2 border rounded text-xs bg-gray-50">
+                        </div>
                     </div>
-                    <input type="text" id="s_topic" placeholder="What did we study?" class="w-full p-2 border rounded">
-                    <input type="text" id="s_res" placeholder="Resources used (Links/Pages)" class="w-full p-2 border rounded">
+                    <input type="text" id="s_topic" placeholder="Focus Topic (e.g. Heart of Algebra)" class="w-full p-2 border rounded">
+                    <input type="text" id="s_res" placeholder="Session Resources (e.g. Khan Unit 4)" class="w-full p-2 border rounded">
                     <button onclick="saveSession()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg hover:bg-emerald-700 transition">Log Session</button>
                 </div>
             </section>
@@ -72,35 +88,51 @@
             <div id="sessionHistory" class="space-y-3"></div>
 
             <section class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg">
-                <h2 class="font-bold mb-4">Quick Resources</h2>
+                <h2 class="font-bold mb-4 border-b border-white/10 pb-2">Shared Resources</h2>
                 <div id="resList" class="space-y-2 mb-4 text-xs"></div>
                 <div class="flex gap-2 border-t border-white/10 pt-4">
-                    <input type="text" id="r_title" placeholder="Name" class="w-1/2 bg-white/10 p-2 rounded outline-none text-xs">
-                    <input type="text" id="r_url" placeholder="URL" class="w-1/2 bg-white/10 p-2 rounded outline-none text-xs">
+                    <input type="text" id="r_title" placeholder="Name" class="w-1/2 bg-white/10 p-2 rounded outline-none text-xs text-white">
+                    <input type="text" id="r_url" placeholder="URL" class="w-1/2 bg-white/10 p-2 rounded outline-none text-xs text-white">
                 </div>
-                <button onclick="saveResource()" class="w-full mt-2 bg-indigo-500 py-1 rounded text-[10px] font-bold">Add Link</button>
+                <button onclick="saveResource()" class="w-full mt-2 bg-indigo-500 py-2 rounded text-[10px] font-bold hover:bg-indigo-400 transition">Add New Link</button>
             </section>
         </div>
     </main>
 
     <script>
+        // --- 1. CONFIG: REPLACE WITH YOUR SUPABASE KEYS ---
         const SB_URL = "https://ujiazulsmnwuzfszdeyk.supabase.co"; 
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWF6dWxzbW53dXpmc3pkZXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODQxMTYsImV4cCI6MjA5MTI2MDExNn0.NllZMljM2TRbx7b9HesBgvoWpuIJwcrHBnWazJ_RQa0";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- CORE FUNCTIONS ---
+        // --- 2. FORMATTING HELPERS ---
+        const formatDT = (dt) => {
+            if(!dt) return 'TBD';
+            return new Date(dt).toLocaleString([], { 
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+            });
+        };
+
+        // --- 3. SAVE FUNCTIONS ---
         async function saveScore() {
             const data = {
                 title: document.getElementById('title').value || "SAT Test",
-                test_date: document.getElementById('test_date').value || new Date().toISOString(),
+                test_date: document.getElementById('test_date').value || new Date().toISOString().split('T')[0],
                 math: parseInt(document.getElementById('math').value) || 0,
                 english: parseInt(document.getElementById('english').value) || 0,
                 total: (parseInt(document.getElementById('math').value)||0) + (parseInt(document.getElementById('english').value)||0),
-                m_alg: parseInt(document.getElementById('m_alg').value)||0, m_adv: parseInt(document.getElementById('m_adv').value)||0, m_psda: parseInt(document.getElementById('m_psda').value)||0, m_gt: parseInt(document.getElementById('m_gt').value)||0,
-                e_ii: parseInt(document.getElementById('e_ii').value)||0, e_cs: parseInt(document.getElementById('e_cs').value)||0, e_eoi: parseInt(document.getElementById('e_eoi').value)||0, e_sec: parseInt(document.getElementById('e_sec').value)||0
+                m_alg: parseInt(document.getElementById('m_alg').value)||0,
+                m_adv: parseInt(document.getElementById('m_adv').value)||0,
+                m_psda: parseInt(document.getElementById('m_psda').value)||0,
+                m_gt: parseInt(document.getElementById('m_gt').value)||0,
+                e_ii: parseInt(document.getElementById('e_ii').value)||0,
+                e_cs: parseInt(document.getElementById('e_cs').value)||0,
+                e_eoi: parseInt(document.getElementById('e_eoi').value)||0,
+                e_sec: parseInt(document.getElementById('e_sec').value)||0
             };
-            await _sb.from('scores').insert([data]);
-            loadAll();
+            const { error } = await _sb.from('scores').insert([data]);
+            if(error) alert(error.message);
+            else { clearInputs(['title','test_date','math','english','m_alg','m_adv','m_psda','m_gt','e_ii','e_cs','e_eoi','e_sec']); loadAll(); }
         }
 
         async function saveSession() {
@@ -110,49 +142,91 @@
                 topic: document.getElementById('s_topic').value,
                 resources: document.getElementById('s_res').value
             };
-            await _sb.from('sessions').insert([data]);
-            loadAll();
+            if(!data.session_date || !data.topic) return alert("Enter date and topic!");
+            const { error } = await _sb.from('sessions').insert([data]);
+            if(error) alert(error.message);
+            else { clearInputs(['s_date','s_next','s_topic','s_res']); loadAll(); }
         }
 
         async function saveResource() {
-            await _sb.from('resources').insert([{ title: document.getElementById('r_title').value, url: document.getElementById('r_url').value }]);
+            const title = document.getElementById('r_title').value;
+            const url = document.getElementById('r_url').value;
+            if(!title || !url) return;
+            await _sb.from('resources').insert([{ title, url }]);
+            clearInputs(['r_title','r_url']);
             loadAll();
         }
 
+        // --- 4. LOAD FUNCTIONS ---
         async function loadAll() {
-            // Load Scores
+            // LOAD SCORES
             const { data: scores } = await _sb.from('scores').select('*').order('test_date', { ascending: false });
             document.getElementById('scoreHistory').innerHTML = scores?.map(s => `
-                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-black text-indigo-700">${s.title}</span>
-                        <span class="text-2xl font-black">${s.total}</span>
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative group">
+                    <button onclick="deleteRow('scores', ${s.id})" class="absolute top-4 right-4 text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-black text-indigo-700 uppercase tracking-tight">${s.title}</h3>
+                            <p class="text-[10px] font-bold text-gray-400">${s.test_date}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-black text-slate-800">${s.total}</span>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 text-[10px] text-gray-500 bg-gray-50 p-2 rounded">
-                        <div>Math: ${s.math} (A:${s.m_alg} M:${s.m_adv} P:${s.m_psda} G:${s.m_gt})</div>
-                        <div>Eng: ${s.english} (I:${s.e_ii} C:${s.e_cs} E:${s.e_eoi} S:${s.e_sec})</div>
+                    <div class="grid grid-cols-2 gap-4 text-[10px] border-t pt-4">
+                        <div class="space-y-1">
+                            <div class="font-bold text-blue-600 mb-1 italic text-[11px]">Math: ${s.math}</div>
+                            <div class="flex justify-between"><span>Algebra</span><span class="font-bold">${s.m_alg}</span></div>
+                            <div class="flex justify-between"><span>Advanced</span><span class="font-bold">${s.m_adv}</span></div>
+                            <div class="flex justify-between"><span>Prob Solve</span><span class="font-bold">${s.m_psda}</span></div>
+                            <div class="flex justify-between"><span>Geo/Trig</span><span class="font-bold">${s.m_gt}</span></div>
+                        </div>
+                        <div class="space-y-1 border-l pl-4">
+                            <div class="font-bold text-purple-600 mb-1 italic text-[11px]">English: ${s.english}</div>
+                            <div class="flex justify-between"><span>Info/Ideas</span><span class="font-bold">${s.e_ii}</span></div>
+                            <div class="flex justify-between"><span>Craft/Str</span><span class="font-bold">${s.e_cs}</span></div>
+                            <div class="flex justify-between"><span>Expression</span><span class="font-bold">${s.e_eoi}</span></div>
+                            <div class="flex justify-between"><span>Conventions</span><span class="font-bold">${s.e_sec}</span></div>
+                        </div>
                     </div>
                 </div>
-            `).join('') || '';
+            `).join('') || '<p class="text-center text-gray-300 py-10">No scores logged yet.</p>';
 
-            // Load Sessions
-            const { data: sessions } = await _sb.from('sessions').select('*').order('session_date', { ascending: false });
-            document.getElementById('sessionHistory').innerHTML = sessions?.map(s => `
+            // LOAD SESSIONS
+            const { data: sess } = await _sb.from('sessions').select('*').order('session_date', { ascending: false });
+            document.getElementById('sessionHistory').innerHTML = sess?.map(s => `
                 <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm relative group">
-                    <button onclick="deleteSess(${s.id})" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
-                    <p class="text-[10px] font-bold text-gray-400 mb-1">SESSION: ${s.session_date}</p>
-                    <h3 class="font-bold text-gray-800 mb-1">${s.topic}</h3>
-                    <p class="text-xs text-gray-500 mb-2">${s.resources || ''}</p>
-                    <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded">Next: ${s.next_class || 'TBD'}</div>
+                    <button onclick="deleteRow('sessions', ${s.id})" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    <p class="text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-tighter italic">Class: ${formatDT(s.session_date)}</p>
+                    <h3 class="font-bold text-gray-800 leading-tight mb-1">${s.topic}</h3>
+                    ${s.resources ? `<p class="text-xs text-gray-500 mb-2 border-t pt-2 mt-1">${s.resources}</p>` : ''}
+                    <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded border border-emerald-100 mt-2">
+                        <i class="fa-regular fa-clock mr-1"></i> Next Class: ${formatDT(s.next_class)}
+                    </div>
                 </div>
             `).join('') || '';
 
-            // Load Links
+            // LOAD RESOURCES
             const { data: res } = await _sb.from('resources').select('*');
-            document.getElementById('resList').innerHTML = res?.map(r => `<div class="flex justify-between truncate"><a href="${r.url}" target="_blank" class="hover:text-indigo-400">${r.title}</a></div>`).join('') || '';
+            document.getElementById('resList').innerHTML = res?.map(r => `
+                <div class="flex justify-between items-center group">
+                    <a href="${r.url}" target="_blank" class="hover:text-indigo-400 truncate pr-2">● ${r.title}</a>
+                    <button onclick="deleteRow('resources', ${r.id})" class="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `).join('') || '';
         }
 
-        async function deleteSess(id) { if(confirm('Delete log?')) { await _sb.from('sessions').delete().eq('id', id); loadAll(); } }
+        // --- 5. UTILS ---
+        async function deleteRow(table, id) {
+            if(confirm(`Permanently delete this from ${table}?`)) {
+                const { error } = await _sb.from(table).delete().eq('id', id);
+                if(error) alert(error.message); else loadAll();
+            }
+        }
+
+        function clearInputs(ids) {
+            ids.forEach(id => document.getElementById(id).value = '');
+        }
 
         loadAll();
     </script>
