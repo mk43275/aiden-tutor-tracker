@@ -1,12 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aiden's SAT Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; }
@@ -56,6 +55,7 @@
                         </div>
                     </div>
                 </div>
+                <textarea id="score_notes" placeholder="Test-specific notes (e.g. 'Ran out of time on Math module 2')" class="w-full p-2 border rounded text-sm mb-4 outline-none focus:border-indigo-400 min-h-[80px]"></textarea>
                 <button onclick="saveScore()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Upload to Cloud</button>
             </section>
 
@@ -100,7 +100,7 @@
     </main>
 
     <script>
-        // --- 1. CONFIG: REPLACE WITH YOUR SUPABASE KEYS ---
+        // --- 1. CONFIG ---
         const SB_URL = "https://ujiazulsmnwuzfszdeyk.supabase.co"; 
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWF6dWxzbW53dXpmc3pkZXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODQxMTYsImV4cCI6MjA5MTI2MDExNn0.NllZMljM2TRbx7b9HesBgvoWpuIJwcrHBnWazJ_RQa0";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
@@ -114,9 +114,6 @@
         };
 
         // --- 3. SAVE FUNCTIONS ---
-        <textarea id="score_notes" placeholder="Test-specific notes (e.g. 'Ran out of time on Math module 2')" class="w-full p-2 border rounded text-sm mb-4 outline-none focus:border-indigo-400"></textarea>
-        
-        <script>
         async function saveScore() {
             const data = {
                 title: document.getElementById('title').value || "SAT Test",
@@ -132,7 +129,7 @@
                 e_cs: parseInt(document.getElementById('e_cs').value)||0,
                 e_eoi: parseInt(document.getElementById('e_eoi').value)||0,
                 e_sec: parseInt(document.getElementById('e_sec').value)||0,
-                notes: document.getElementById('score_notes').value // This maps to your 'notes' column
+                notes: document.getElementById('score_notes').value 
             };
             const { error } = await _sb.from('scores').insert([data]);
             if(error) alert(error.message);
@@ -141,7 +138,6 @@
                 loadAll(); 
             }
         }
-        </script>
 
         async function saveSession() {
             const data = {
@@ -197,6 +193,7 @@
                             <div class="flex justify-between"><span>Conventions</span><span class="font-bold">${s.e_sec}</span></div>
                         </div>
                     </div>
+                    ${s.notes ? `<div class="mt-4 p-2 bg-indigo-50 rounded text-xs text-indigo-700 italic border border-indigo-100">Notes: ${s.notes}</div>` : ''}
                 </div>
             `).join('') || '<p class="text-center text-gray-300 py-10">No scores logged yet.</p>';
 
@@ -224,7 +221,6 @@
             `).join('') || '';
         }
 
-        // --- 5. UTILS ---
         async function deleteRow(table, id) {
             if(confirm(`Permanently delete this from ${table}?`)) {
                 const { error } = await _sb.from(table).delete().eq('id', id);
@@ -233,7 +229,10 @@
         }
 
         function clearInputs(ids) {
-            ids.forEach(id => document.getElementById(id).value = '');
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = '';
+            });
         }
 
         loadAll();
