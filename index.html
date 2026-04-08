@@ -6,90 +6,171 @@
     <title>Aiden's SAT Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-900 pb-20">
 
     <header class="bg-white border-b p-6 mb-8 shadow-sm">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-indigo-700">Aiden's Shared Tracker</h1>
-            <div id="status" class="text-xs text-gray-400 font-mono">Cloud Sync Active</div>
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-indigo-700">Aiden's SAT Tracker</h1>
+            <div class="text-xs text-emerald-500 font-mono bg-emerald-50 px-2 py-1 rounded">● Cloud Synced</div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <main class="max-w-5xl mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         
         <div class="md:col-span-2 space-y-6">
             <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold mb-4">Log New Score</h2>
+                <h2 class="text-lg font-bold mb-4">Log Full Practice Test</h2>
+                
                 <div class="grid grid-cols-2 gap-4 mb-4">
-                    <input type="number" id="math" placeholder="Math (800)" class="p-3 bg-blue-50 rounded-lg font-bold outline-none">
-                    <input type="number" id="english" placeholder="English (800)" class="p-3 bg-purple-50 rounded-lg font-bold outline-none">
+                    <input type="text" id="title" placeholder="Test Title (e.g. Practice Test #1)" class="p-3 border rounded-lg text-sm outline-none focus:border-indigo-500">
+                    <input type="date" id="test_date" class="p-3 border rounded-lg text-sm outline-none focus:border-indigo-500">
                 </div>
-                <textarea id="notes" placeholder="Session notes (e.g. Worked on Trig word problems)" class="w-full p-3 border rounded-lg text-sm mb-4 outline-none focus:border-indigo-500"></textarea>
-                <button onclick="saveToCloud()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700">Upload to Cloud</button>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-blue-50 rounded-xl">
+                        <label class="block text-xs font-bold text-blue-600 uppercase mb-2">Math Total</label>
+                        <input type="number" id="math" placeholder="800" class="w-full bg-transparent text-2xl font-bold outline-none">
+                        <div class="mt-4 space-y-2 border-t border-blue-100 pt-3">
+                            <input type="number" id="m_alg" placeholder="Algebra" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="m_adv" placeholder="Advanced Math" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="m_psda" placeholder="Problem Solving" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="m_gt" placeholder="Geometry/Trig" class="w-full bg-white/50 p-1 text-xs rounded border">
+                        </div>
+                    </div>
+                    <div class="p-4 bg-purple-50 rounded-xl">
+                        <label class="block text-xs font-bold text-purple-600 uppercase mb-2">English Total</label>
+                        <input type="number" id="english" placeholder="800" class="w-full bg-transparent text-2xl font-bold outline-none">
+                        <div class="mt-4 space-y-2 border-t border-purple-100 pt-3">
+                            <input type="number" id="e_ii" placeholder="Info & Ideas" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="e_cs" placeholder="Craft & Structure" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="e_eoi" placeholder="Expression of Ideas" class="w-full bg-white/50 p-1 text-xs rounded border">
+                            <input type="number" id="e_sec" placeholder="Eng. Conventions" class="w-full bg-white/50 p-1 text-xs rounded border">
+                        </div>
+                    </div>
+                </div>
+
+                <textarea id="notes" placeholder="Tutor Notes..." class="w-full p-3 border rounded-lg text-sm mb-4 outline-none focus:border-indigo-500"></textarea>
+                <button onclick="saveToCloud()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-lg">Upload Comprehensive Score</button>
             </section>
 
             <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <h2 class="text-lg font-bold mb-4">Score History & Notes</h2>
-                <div id="history" class="space-y-4">
-                    </div>
+                <h2 class="text-lg font-bold mb-4">Progression</h2>
+                <div id="history" class="space-y-4"></div>
             </section>
         </div>
 
         <div class="space-y-6">
             <section class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg">
-                <h2 class="font-bold mb-4">Quick Links</h2>
-                <div class="space-y-2 text-sm">
-                    <a href="https://bluebook.collegeboard.org/" target="_blank" class="block p-2 hover:bg-white/10 rounded">Bluebook Exams</a>
-                    <a href="https://www.khanacademy.org/sat" target="_blank" class="block p-2 hover:bg-white/10 rounded">Khan Academy</a>
+                <h2 class="font-bold mb-4">Resources</h2>
+                <div id="resourceList" class="space-y-3 mb-4 text-sm text-indigo-200"></div>
+                <div class="pt-4 border-t border-white/20">
+                    <input type="text" id="resTitle" placeholder="Name" class="w-full bg-white/10 p-2 rounded text-xs mb-2 outline-none">
+                    <input type="text" id="resUrl" placeholder="URL" class="w-full bg-white/10 p-2 rounded text-xs mb-2 outline-none">
+                    <button onclick="addResource()" class="w-full bg-indigo-500 text-xs font-bold py-2 rounded hover:bg-indigo-400">Add Link</button>
                 </div>
             </section>
         </div>
     </main>
 
     <script>
-        // PASTE YOUR INFO HERE
         const SUPABASE_URL = "https://ujiazulsmnwuzfszdeyk.supabase.co"; 
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWF6dWxzbW53dXpmc3pkZXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODQxMTYsImV4cCI6MjA5MTI2MDExNn0.NllZMljM2TRbx7b9HesBgvoWpuIJwcrHBnWazJ_RQa0";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWF6dWxzbW53dXpmc3pkZXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODQxMTYsImV4cCI6MjA5MTI2MDExNn0.NllZMljM2TRbx7b9HesBgvoWpuIJwcrHBnWazJ_RQa0"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function saveToCloud() {
-            const math = parseInt(document.getElementById('math').value);
-            const english = parseInt(document.getElementById('english').value);
-            const notes = document.getElementById('notes').value;
+            const payload = {
+                title: document.getElementById('title').value || "SAT Practice",
+                test_date: document.getElementById('test_date').value || new Date().toISOString().split('T')[0],
+                math: parseInt(document.getElementById('math').value) || 0,
+                english: parseInt(document.getElementById('english').value) || 0,
+                total: (parseInt(document.getElementById('math').value) || 0) + (parseInt(document.getElementById('english').value) || 0),
+                m_alg: parseInt(document.getElementById('m_alg').value) || 0,
+                m_adv: parseInt(document.getElementById('m_adv').value) || 0,
+                m_psda: parseInt(document.getElementById('m_psda').value) || 0,
+                m_gt: parseInt(document.getElementById('m_gt').value) || 0,
+                e_ii: parseInt(document.getElementById('e_ii').value) || 0,
+                e_cs: parseInt(document.getElementById('e_cs').value) || 0,
+                e_eoi: parseInt(document.getElementById('e_eoi').value) || 0,
+                e_sec: parseInt(document.getElementById('e_sec').value) || 0,
+                notes: document.getElementById('notes').value
+            };
 
-            if(!math || !english) return alert("Enter scores first!");
+            const { error } = await _supabase.from('scores').insert([payload]);
+            if(!error) { location.reload(); } else { alert(error.message); }
+        }
 
-            const { error } = await _supabase.from('scores').insert([
-                { math, english, total: math + english, notes }
-            ]);
-
-            if(error) alert("Error: " + error.message);
-            else {
-                document.getElementById('math').value = '';
-                document.getElementById('english').value = '';
-                document.getElementById('notes').value = '';
+        async function deleteScore(id) {
+            if(confirm("Delete entry?")) {
+                await _supabase.from('scores').delete().eq('id', id);
                 loadData();
             }
         }
 
         async function loadData() {
-            const { data } = await _supabase.from('scores').select('*').order('created_at', { ascending: false });
+            const { data } = await _supabase.from('scores').select('*').order('test_date', { ascending: false });
+            const container = document.getElementById('history');
             if(data) {
-                document.getElementById('history').innerHTML = data.map(s => `
-                    <div class="p-4 border-l-4 border-indigo-500 bg-gray-50 rounded-r-lg">
-                        <div class="flex justify-between font-bold">
-                            <span>Total: ${s.total}</span>
-                            <span class="text-xs text-gray-400">${new Date(s.created_at).toLocaleDateString()}</span>
+                container.innerHTML = data.map(s => `
+                    <div class="p-5 border bg-white rounded-xl shadow-sm relative group">
+                        <button onclick="deleteScore(${s.id})" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="font-black text-indigo-700 text-lg">${s.title}</h3>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">${s.test_date}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-black">${s.total}</div>
+                                <div class="text-[10px] text-gray-500 font-bold uppercase">M: ${s.math} | E: ${s.english}</div>
+                            </div>
                         </div>
-                        <div class="text-sm text-gray-600 mb-2">Math: ${s.math} | English: ${s.english}</div>
-                        ${s.notes ? `<p class="text-xs italic text-gray-500 border-t pt-2 mt-2">${s.notes}</p>` : ''}
+                        <div class="grid grid-cols-2 gap-4 text-[11px] bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div class="space-y-1">
+                                <div class="flex justify-between"><span>Algebra</span><span class="font-bold">${s.m_alg}</span></div>
+                                <div class="flex justify-between"><span>Adv. Math</span><span class="font-bold">${s.m_adv}</span></div>
+                                <div class="flex justify-between"><span>Prob/Data</span><span class="font-bold">${s.m_psda}</span></div>
+                                <div class="flex justify-between"><span>Geo/Trig</span><span class="font-bold">${s.m_gt}</span></div>
+                            </div>
+                            <div class="space-y-1 border-l pl-4">
+                                <div class="flex justify-between"><span>Info/Ideas</span><span class="font-bold">${s.e_ii}</span></div>
+                                <div class="flex justify-between"><span>Craft/Str</span><span class="font-bold">${s.e_cs}</span></div>
+                                <div class="flex justify-between"><span>Expression</span><span class="font-bold">${s.e_eoi}</span></div>
+                                <div class="flex justify-between"><span>Conventions</span><span class="font-bold">${s.e_sec}</span></div>
+                            </div>
+                        </div>
+                        ${s.notes ? `<p class="mt-3 text-xs text-gray-600 italic bg-yellow-50 p-2 rounded border border-yellow-100">Notes: ${s.notes}</p>` : ''}
                     </div>
                 `).join('');
             }
         }
 
+        async function addResource() {
+            const title = document.getElementById('resTitle').value;
+            const url = document.getElementById('resUrl').value;
+            await _supabase.from('resources').insert([{ title, url }]);
+            loadResources();
+        }
+
+        async function loadResources() {
+            const { data } = await _supabase.from('resources').select('*');
+            if(data) {
+                document.getElementById('resourceList').innerHTML = data.map(r => `
+                    <div class="flex justify-between items-center group">
+                        <a href="${r.url}" target="_blank" class="hover:underline truncate">${r.title}</a>
+                        <button onclick="deleteResource(${r.id})" class="opacity-0 group-hover:opacity-100 hover:text-red-400"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function deleteResource(id) {
+            await _supabase.from('resources').delete().eq('id', id);
+            loadResources();
+        }
+
         loadData();
+        loadResources();
     </script>
 </body>
 </html>
