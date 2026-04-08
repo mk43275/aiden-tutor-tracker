@@ -13,11 +13,19 @@
 </head>
 <body class="bg-gray-50 text-gray-900 pb-20">
 
-    <header class="bg-white border-b p-6 mb-8 shadow-sm">
+    <header class="bg-white border-b p-4 mb-8 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black text-indigo-700 tracking-tight">Aiden's Tutor Portal</h1>
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain onerror="this.style.display='none'">
+                <h1 class="text-xl font-black text-indigo-700 tracking-tight hidden sm:block">
+                    Aiden's Tutor Portal
+                </h1>
+            </div>
+            
             <div class="flex gap-4 items-center">
-                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded tracking-widest uppercase">Cloud Sync Active</span>
+                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded tracking-widest uppercase">
+                    Cloud Sync Active
+                </span>
             </div>
         </div>
     </header>
@@ -55,11 +63,11 @@
                         </div>
                     </div>
                 </div>
-                <textarea id="score_notes" placeholder="Test-specific notes (e.g. 'Ran out of time on Math module 2')" class="w-full p-2 border rounded text-sm mb-4 outline-none focus:border-indigo-400 min-h-[80px]"></textarea>
+                <textarea id="score_notes" placeholder="Test-specific notes (e.g. 'Focused on timing, felt confident')" class="w-full p-2 border rounded text-sm mb-4 outline-none focus:border-indigo-400 min-h-[60px]"></textarea>
                 <button onclick="saveScore()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-100">Upload to Cloud</button>
             </section>
 
-            <h2 class="text-xl font-black text-gray-300 uppercase tracking-widest text-center py-4 italic">Progression</h2>
+            <h2 class="text-xl font-black text-gray-300 uppercase tracking-widest text-center py-4 italic underline decoration-indigo-200">Progression</h2>
             <div id="scoreHistory" class="space-y-4"></div>
         </div>
 
@@ -88,7 +96,9 @@
             <div id="sessionHistory" class="space-y-3"></div>
 
             <section class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg">
-                <h2 class="font-bold mb-4 border-b border-white/10 pb-2">Shared Resources</h2>
+                <h2 class="font-bold mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-link text-indigo-400"></i> Shared Resources
+                </h2>
                 <div id="resList" class="space-y-2 mb-4 text-xs"></div>
                 <div class="flex gap-2 border-t border-white/10 pt-4">
                     <input type="text" id="r_title" placeholder="Name" class="w-1/2 bg-white/10 p-2 rounded outline-none text-xs text-white">
@@ -100,12 +110,12 @@
     </main>
 
     <script>
-        // --- 1. CONFIG ---
+        // --- CONFIG ---
         const SB_URL = "https://ujiazulsmnwuzfszdeyk.supabase.co"; 
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaWF6dWxzbW53dXpmc3pkZXlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2ODQxMTYsImV4cCI6MjA5MTI2MDExNn0.NllZMljM2TRbx7b9HesBgvoWpuIJwcrHBnWazJ_RQa0";
         const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-        // --- 2. FORMATTING HELPERS ---
+        // --- HELPERS ---
         const formatDT = (dt) => {
             if(!dt) return 'TBD';
             return new Date(dt).toLocaleString([], { 
@@ -113,7 +123,9 @@
             });
         };
 
-        // --- 3. SAVE FUNCTIONS ---
+        const clearInputs = (ids) => ids.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ''; });
+
+        // --- ACTIONS ---
         async function saveScore() {
             const data = {
                 title: document.getElementById('title').value || "SAT Test",
@@ -132,11 +144,7 @@
                 notes: document.getElementById('score_notes').value 
             };
             const { error } = await _sb.from('scores').insert([data]);
-            if(error) alert(error.message);
-            else { 
-                clearInputs(['title','test_date','math','english','m_alg','m_adv','m_psda','m_gt','e_ii','e_cs','e_eoi','e_sec', 'score_notes']); 
-                loadAll(); 
-            }
+            if(error) alert(error.message); else { clearInputs(['title','test_date','math','english','m_alg','m_adv','m_psda','m_gt','e_ii','e_cs','e_eoi','e_sec','score_notes']); loadAll(); }
         }
 
         async function saveSession() {
@@ -146,22 +154,26 @@
                 topic: document.getElementById('s_topic').value,
                 resources: document.getElementById('s_res').value
             };
-            if(!data.session_date || !data.topic) return alert("Enter date and topic!");
+            if(!data.session_date || !data.topic) return alert("Please select a date and enter a topic.");
             const { error } = await _sb.from('sessions').insert([data]);
-            if(error) alert(error.message);
-            else { clearInputs(['s_date','s_next','s_topic','s_res']); loadAll(); }
+            if(error) alert(error.message); else { clearInputs(['s_date','s_next','s_topic','s_res']); loadAll(); }
         }
 
         async function saveResource() {
             const title = document.getElementById('r_title').value;
             const url = document.getElementById('r_url').value;
             if(!title || !url) return;
-            await _sb.from('resources').insert([{ title, url }]);
-            clearInputs(['r_title','r_url']);
-            loadAll();
+            const { error } = await _sb.from('resources').insert([{ title, url }]);
+            if(!error) { clearInputs(['r_title','r_url']); loadAll(); }
         }
 
-        // --- 4. LOAD FUNCTIONS ---
+        async function deleteRow(table, id) {
+            if(confirm(`Delete this entry from ${table}?`)) {
+                await _sb.from(table).delete().eq('id', id);
+                loadAll();
+            }
+        }
+
         async function loadAll() {
             // LOAD SCORES
             const { data: scores } = await _sb.from('scores').select('*').order('test_date', { ascending: false });
@@ -173,27 +185,25 @@
                             <h3 class="font-black text-indigo-700 uppercase tracking-tight">${s.title}</h3>
                             <p class="text-[10px] font-bold text-gray-400">${s.test_date}</p>
                         </div>
-                        <div class="text-right">
-                            <span class="text-3xl font-black text-slate-800">${s.total}</span>
-                        </div>
+                        <div class="text-right"><span class="text-3xl font-black text-slate-800">${s.total}</span></div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 text-[10px] border-t pt-4">
                         <div class="space-y-1">
-                            <div class="font-bold text-blue-600 mb-1 italic text-[11px]">Math: ${s.math}</div>
+                            <div class="font-bold text-blue-600 mb-1 italic">Math: ${s.math}</div>
                             <div class="flex justify-between"><span>Algebra</span><span class="font-bold">${s.m_alg}</span></div>
                             <div class="flex justify-between"><span>Advanced</span><span class="font-bold">${s.m_adv}</span></div>
-                            <div class="flex justify-between"><span>Prob Solve</span><span class="font-bold">${s.m_psda}</span></div>
-                            <div class="flex justify-between"><span>Geo/Trig</span><span class="font-bold">${s.m_gt}</span></div>
+                            <div class="flex justify-between"><span>Problem Solving</span><span class="font-bold">${s.m_psda}</span></div>
+                            <div class="flex justify-between"><span>Geometry/Trig</span><span class="font-bold">${s.m_gt}</span></div>
                         </div>
                         <div class="space-y-1 border-l pl-4">
-                            <div class="font-bold text-purple-600 mb-1 italic text-[11px]">English: ${s.english}</div>
+                            <div class="font-bold text-purple-600 mb-1 italic">English: ${s.english}</div>
                             <div class="flex justify-between"><span>Info/Ideas</span><span class="font-bold">${s.e_ii}</span></div>
-                            <div class="flex justify-between"><span>Craft/Str</span><span class="font-bold">${s.e_cs}</span></div>
+                            <div class="flex justify-between"><span>Craft/Structure</span><span class="font-bold">${s.e_cs}</span></div>
                             <div class="flex justify-between"><span>Expression</span><span class="font-bold">${s.e_eoi}</span></div>
                             <div class="flex justify-between"><span>Conventions</span><span class="font-bold">${s.e_sec}</span></div>
                         </div>
                     </div>
-                    ${s.notes ? `<div class="mt-4 p-2 bg-indigo-50 rounded text-xs text-indigo-700 italic border border-indigo-100">Notes: ${s.notes}</div>` : ''}
+                    ${s.notes ? `<div class="mt-4 p-2 bg-indigo-50 rounded text-xs text-indigo-700 italic border border-indigo-100 font-medium">Notes: ${s.notes}</div>` : ''}
                 </div>
             `).join('') || '<p class="text-center text-gray-300 py-10">No scores logged yet.</p>';
 
@@ -202,10 +212,10 @@
             document.getElementById('sessionHistory').innerHTML = sess?.map(s => `
                 <div class="bg-white p-4 rounded-xl border-l-4 border-emerald-500 shadow-sm relative group">
                     <button onclick="deleteRow('sessions', ${s.id})" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>
-                    <p class="text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-tighter italic">Class: ${formatDT(s.session_date)}</p>
+                    <p class="text-[10px] font-bold text-gray-400 mb-1 uppercase italic">${formatDT(s.session_date)}</p>
                     <h3 class="font-bold text-gray-800 leading-tight mb-1">${s.topic}</h3>
                     ${s.resources ? `<p class="text-xs text-gray-500 mb-2 border-t pt-2 mt-1">${s.resources}</p>` : ''}
-                    <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded border border-emerald-100 mt-2">
+                    <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded border border-emerald-100 mt-1">
                         <i class="fa-regular fa-clock mr-1"></i> Next Class: ${formatDT(s.next_class)}
                     </div>
                 </div>
@@ -219,20 +229,6 @@
                     <button onclick="deleteRow('resources', ${r.id})" class="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             `).join('') || '';
-        }
-
-        async function deleteRow(table, id) {
-            if(confirm(`Permanently delete this from ${table}?`)) {
-                const { error } = await _sb.from(table).delete().eq('id', id);
-                if(error) alert(error.message); else loadAll();
-            }
-        }
-
-        function clearInputs(ids) {
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.value = '';
-            });
         }
 
         loadAll();
