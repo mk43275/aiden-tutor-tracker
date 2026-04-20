@@ -115,6 +115,24 @@
             <div id="sessionHistory" class="space-y-3"></div>
 
             <section class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-amber-400">
+                    <i class="fa-solid fa-book-open"></i> ASSIGNED HOMEWORK
+                </h2>
+                
+                <div id="homeworkList" class="space-y-3 mb-6"></div>
+
+                <div class="space-y-2 pt-4 border-t border-slate-800">
+                    <input type="text" id="hw_title" placeholder="Assignment Title" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-xs outline-none focus:border-amber-500 text-white transition">
+                    <input type="text" id="hw_url" placeholder="Link (Optional)" class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-xs outline-none focus:border-amber-500 text-white transition">
+                    <textarea id="hw_notes" placeholder="Notes/Instructions..." class="w-full bg-slate-800 border border-slate-700 p-2 rounded-lg text-xs outline-none focus:border-amber-500 text-white min-h-[60px] transition"></textarea>
+                    
+                    <button onclick="saveHomework()" class="w-full bg-amber-600/20 text-amber-400 border border-amber-500/30 font-bold py-2 rounded-lg hover:bg-amber-600/30 transition text-xs uppercase mt-2">
+                        Assign Homework
+                    </button>
+                </div>
+            </section>
+
+            <section class="bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-800">
                 <h2 class="font-bold mb-4 border-b border-slate-800 pb-2 text-indigo-400">SHARED RESOURCES</h2>
                 <div id="resList" class="space-y-2 mb-6 text-xs text-slate-400"></div>
                 <div class="flex gap-2 pt-4">
@@ -165,6 +183,29 @@
 
         async function saveResource() {
             await _sb.from('resources').insert([{ title: document.getElementById('r_title').value, url: document.getElementById('r_url').value }]);
+            loadAll();
+        }
+
+        async function saveHomework() {
+            const data = {
+                title: document.getElementById('hw_title').value,
+                url: document.getElementById('hw_url').value,
+                notes: document.getElementById('hw_notes').value,
+                completed: false
+            };
+            
+            if(!data.title) {
+                alert("Please enter an assignment title.");
+                return;
+            }
+            
+            await _sb.from('homework').insert([data]);
+            clearInputs(['hw_title', 'hw_url', 'hw_notes']);
+            loadAll();
+        }
+
+        async function toggleHomework(id, currentStatus) {
+            await _sb.from('homework').update({ completed: !currentStatus }).eq('id', id);
             loadAll();
         }
 
@@ -222,6 +263,28 @@
                     <div class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 inline-block px-3 py-1 rounded border border-emerald-500/20 mt-2">Next Class: ${formatDT(s.next_class)}</div>
                 </div>
             `).join('') || '';
+
+            const { data: hw } = await _sb.from('homework').select('*').order('id', { ascending: true });
+            document.getElementById('homeworkList').innerHTML = hw?.map(h => `
+                <div class="bg-slate-800/50 p-3 rounded-xl border ${h.completed ? 'border-emerald-500/30 opacity-50' : 'border-amber-500/30'} flex gap-3 items-start group relative transition-all">
+                    
+                    <button onclick="deleteRow('homework', ${h.id})" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-500 transition">
+                        <i class="fa-solid fa-trash text-[10px]"></i>
+                    </button>
+
+                    <div class="pt-1 cursor-pointer" onclick="toggleHomework(${h.id}, ${h.completed})">
+                        ${h.completed 
+                            ? '<i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>' 
+                            : '<i class="fa-regular fa-circle text-slate-400 text-lg hover:text-amber-400 transition"></i>'}
+                    </div>
+
+                    <div class="flex-1 pr-6">
+                        <h4 class="text-sm font-bold ${h.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${h.title}</h4>
+                        ${h.url ? `<a href="${h.url}" target="_blank" class="text-[10px] text-indigo-400 hover:text-indigo-300 block truncate mt-1"><i class="fa-solid fa-link"></i> Resource Link</a>` : ''}
+                        ${h.notes ? `<p class="text-[11px] text-slate-400 mt-1 leading-relaxed">${h.notes}</p>` : ''}
+                    </div>
+                </div>
+            `).join('') || '<div class="text-[11px] text-slate-500 italic text-center p-4">No homework assigned yet.</div>';
 
             const { data: res } = await _sb.from('resources').select('*');
             document.getElementById('resList').innerHTML = res?.map(r => `
